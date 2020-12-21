@@ -6,4 +6,10 @@ import urllib
 def readRequest():
   with open('./transparencia.json') as f:
     data = json.load(f)
-  return data
+  # Filtrar serie
+  serie = data["log"]["entries"]
+  req = []
+  for request in serie:
+    if "https://www.portaltransparencia.cl/PortalPdT/web/guest/directorio-de-organismos-regulados" in request["request"]["url"]:
+      req.append(request["request"])
+  return req

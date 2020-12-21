@@ -1,19 +1,24 @@
 from filtrar import readRequest
-
 import requests
 
-r = readRequest()
+req = readRequest()
 
-# print(r["log"]["entries"][0]["request"])
+#Primer request
+cookie = requests.request("GET", req[0]["url"]).headers["Set-Cookie"]
 
-serie = r["log"]["entries"]
-req = []
-for request in serie:
-    if "https://www.portaltransparencia.cl/PortalPdT/web/guest/directorio-de-organismos-regulados" in request["request"]["url"]:
-        req.append(request["request"])
+#Crear header nuevo
+h = {}
+for header in req[1]["headers"]:
+    cookieFlag = False
+    if header["name"] == "Cookie":
+        cookieFlag = True
+        h["Cookie"] = cookie
+    else:
+        h[header["name"]] = header["value"]
+    if not(cookieFlag):
+        h["Cookie"] = cookie
 
-res = requests.request("GET", req[0]["url"])
+#Segundo request anexando cookie recibida.
+res = requests.request("GET", req[1]["url"], headers=h)
 
-cookie = res.headers["Set-Cookie"]
-
-print(cookie)
+print(res.headers)
