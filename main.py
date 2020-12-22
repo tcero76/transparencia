@@ -1,14 +1,26 @@
-from filtrar import readRequest, updateCookie
+from funciones import readRequest, updateCookie
+from bs4 import BeautifulSoup
 import requests
 
+# Captura desde Chrome con la serie de requests en formato HAR
 req = readRequest()
 
-#Primer request
+# Solicitud inicial donde se captura la cookie
 cookie = requests.request("GET", req[0]["url"]).headers["Set-Cookie"]
 
-h = updateCookie(req[1],cookie)
+for r in req:
+# incorpora la cookie en el header de nueva request
+    h = updateCookie(r,cookie)
+#Serie de requests.
+    requests.request("GET", r["url"], headers=h)
 
-#Segundo request anexando cookie recibida.
-res = requests.request("GET", req[1]["url"], headers=h)
 
+click = list(r for r in req if r["method"]=="POST")[0]
+h = updateCookie(click,cookie)
+res = requests.request("POST", click["url"], headers=h, data=click["postData"])
+print(res.text)
+soup = BeautifulSoup(res.text,"lxml")
+print(soup.select(".dor_organismos_panel"))
 print(res.headers)
+
+
