@@ -28,3 +28,15 @@ def updateCookie(req, cookie):
       if not(cookieFlag):
           h["Cookie"] = cookie
   return h
+
+# actualiza el parámetro ViewState en el body de la request
+def updateViewState(click,ViewState):
+    form = ""
+    print(ViewState)
+    for i in click["postData"]["text"].split("&"):
+        if "javax.faces.ViewState" == i.split("=")[0]:
+            form += "javax.faces.ViewState=" + ViewState + "&"
+        else:
+            form += i.split("=")[0] + "=" + i.split("=")[1] + "&"
+    print(len(form))
+    return form
