@@ -26,12 +26,14 @@ res = requests.request("POST", click["url"], headers=h, data=form)
 
 soup = BeautifulSoup(res.text,"html5lib")
 
-subSource = []
+panel2 = []
 for i in soup.select("a.dor_organismos_selecc.Class_id_link_org_link"):
-    subSource.append({"nombre":i["name"], "name": i.text})
+    panel2.append({"nombre":i["name"], "name": i.text})
 
-form = updateHeader(click,ViewState,subSource[1]["name"])
-res = requests.request("POST", click["url"], headers=h, data=form)
+url = (soup.select("form#A3684:form")[0]["action"])
+
+form = updateHeader(click,ViewState,panel2[0]["name"])
+res = requests.request("POST", url , headers=h, data=form)
 soup = BeautifulSoup(res.text,"html5lib")
 print(res.text)
 # print(soup.select("div.enlace_ficha_org"))
