@@ -29,14 +29,13 @@ for panel in panel1:
 
     panel2 = []
     for i in soup.select("a.dor_organismos_selecc.Class_id_link_org_link"):
-        panel2.append({"nombre":i["name"], "name": i.text})
+        panel2.append({"nombre":i.text, "name": i["name"]})
 
     for panel in panel2:
         url = (soup.select("form#A3684:form")[0]["action"])
 
         form = updateHeader(click,ViewState,panel["name"])
         res = requests.request("POST", url , headers=h, data=form)
-        soup = BeautifulSoup(res.text,"html5lib")
-        print(res.text)
+        soup2 = BeautifulSoup(res.text,"html5lib")
         ress.append(res)
-# print(soup.select("div.enlace_ficha_org"))
+        print(soup2.select("div.enlace_ficha_org"))
