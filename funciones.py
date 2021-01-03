@@ -1,7 +1,7 @@
 import json
 from urllib.parse import quote_plus
 import requests
-# from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup
 import urllib
 
 def readRequest():
@@ -15,6 +15,22 @@ def readRequest():
       req.append(request["request"])
   return req
 
+def getCookieAndViewState():
+    req = readRequest()
+    response = requests.request("GET", req[0]["url"])
+    cookie = response.headers["Set-Cookie"]
+    soup = BeautifulSoup(response.text, "html5lib")
+    ViewState = soup.select("input#javax.faces.ViewState")[0]["value"]
+    return ViewState, cookie, soup
+
+def clickPanel1(cookie, ViewState, item):
+    req = readRequest()
+    click = list(r for r in req if r["method"]=="POST")[3]
+    h = updateCookie(click,cookie)
+    form = updateHeader(click,ViewState,item["name"])
+    res = requests.request("POST", click["url"], headers=h, data=form)
+    soup = BeautifulSoup(res.text,"html5lib")
+    return soup, click, h
 
 #Crear header nuevo
 def updateCookie(req, cookie):
